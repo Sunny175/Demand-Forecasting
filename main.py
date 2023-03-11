@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import pickle
 
 
+
 app = Flask(__name__)
 
 
@@ -24,6 +25,8 @@ def predict():
     region = model.predict(request.form("region"))
     op_area = model.predict(request.form("op_area"))
     center_type = model.predict(request.form("center_type"))
+    print(model.predict(category, cuisine, week, check_out, base_price, emailer, homepage, city, region, op_area, center_type))
+
     return render_template('index.html')
 
 if __name__ ==  '__main__':
