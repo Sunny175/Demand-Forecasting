@@ -1,5 +1,7 @@
-from flask import Flask, render_template, request
+import numpy as np
+from flask import Flask, render_template, request, jsonify
 import pickle
+
 
 
 
@@ -14,20 +16,27 @@ def home():
 
 @app.route('/predict', methods=['POST', 'GET'])
 def predict():
-    category = model.predict(request.form("category"))
-    cuisine = model.predict(request.form("cuisine"))
-    week = model.predict(request.form("week"))
-    check_out = model.predict(request.form("checkout_price"))
-    base_price = model.predict(request.form("base_price"))
-    emailer = model.predict(request.form("emailer"))
-    homepage = model.predict(request.form("homepage"))
-    city = model.predict(request.form("city"))
-    region = model.predict(request.form("region"))
-    op_area = model.predict(request.form("op_area"))
-    center_type = model.predict(request.form("center_type"))
-    print(model.predict(category, cuisine, week, check_out, base_price, emailer, homepage, city, region, op_area, center_type))
-
-    return render_template('index.html')
-
+        model = pickle.load(open('gradientboostmodel.pkl', 'rb'))
+        category = request.form['category']
+        cuisine = int(request.form['cuisine'])
+        week = int(request.form['week'])
+        checkout_price = float(request.form['checkout_price'])
+        base_price = float(request.form['base_price'])
+        emailer = int(request.form['emailer'])
+        homepage = int(request.form['homepage'])
+        city = int(request.form['city'])
+        region = int(request.form['region'])
+        op_area = float(request.form['op_area'])
+        center_type = int(request.form['center_type'])
+        category = int(category)
+        list = [category, cuisine, week, checkout_price, base_price, emailer, homepage, city, region, op_area,
+                center_type]
+        data = np.asarray([list])
+        output = model.predict(data)
+        output = int(output)
+        print(output)
+        if output < 0:
+            output = 0
+        return render_template("index.html", output=output, week=week)
 if __name__ ==  '__main__':
     app.run(debug=True)
