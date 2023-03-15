@@ -38,5 +38,8 @@ def predict():
         if output < 0:
             output = 0
         return render_template("index.html", output=output, week=week)
+@app.route("/sales")
+def sales():
+        return render_template("sales.html")
 if __name__ ==  '__main__':
     app.run(debug=True)
