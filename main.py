@@ -76,9 +76,15 @@ def login():
             return redirect(url_for("login"))
         else:
             login_user(user)
-            return redirect(url_for("secrets", name=user.name))
+            return redirect(url_for("dashboard", name=user.name))
     return render_template("login.html")
 
+
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    return render_template("dashboard.html", name=current_user.name)
 
 @app.route("/register", methods=["POST", "GET"])
 def register():
@@ -97,7 +103,7 @@ def register():
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user)
-        return redirect(url_for("secrets"))
+        return redirect(url_for("login"))
     return render_template('register.html')
 
 
