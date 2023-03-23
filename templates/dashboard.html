@@ -1,4 +1,3 @@
-<!-- https://github1s.com/nirmaltrivedi/Foodiepy -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -119,7 +118,7 @@
                 <h5>CUSTOMERS:</h5>
                 <hr>
                 <div class="card card-body">
-                    <a class="btn btn-primary  btn-sm btn-block" href="#">Create
+                    <a class="btn btn-primary  btn-sm btn-block" href="{{ url_for('create_customer') }}">Create
                         Customer</a>
                     <table class="table table-sm">
                         <tr>
@@ -140,7 +139,7 @@
                 <h5>LAST ORDERS</h5>
                 <hr>
                 <div class="card card-body">
-                    <a class="btn btn-primary  btn-sm btn-block" href="#">Create
+                    <a class="btn btn-primary  btn-sm btn-block" href="{{ url_for('create_product') }}">Create
                         Product</a>
                     <table class="table table-sm">
                         <tr>

@@ -4,12 +4,17 @@ from flask import Flask, render_template, request, url_for, redirect, flash
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_bootstrap import Bootstrap
+from customer_form import createCustomer
+from create_product import createProduct
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'any-secret-key-you-choose'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+Bootstrap(app)
+
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -22,6 +27,22 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(1000))
     name = db.Column(db.String(1000))
+
+
+class Customer(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20), unique=True)
+    address = db.Column(db.String(100))
+    phoneNumber = db.Column(db.Integer, unique=True)
+    city = db.Column(db.String(20))
+    state = db.Column(db.String(20))
+
+
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20), unique=True)
+    cuisine = db.Column(db.String(20))
+    price = db.Column(db.Integer)
 
 
 db.create_all()
@@ -80,11 +101,11 @@ def login():
     return render_template("login.html")
 
 
-
 @app.route("/dashboard")
 @login_required
 def dashboard():
     return render_template("dashboard.html", name=current_user.name)
+
 
 @app.route("/register", methods=["POST", "GET"])
 def register():
@@ -118,10 +139,36 @@ def logout():
     return redirect(url_for("home"))
 
 
-@app.route('/secrets')
-@login_required
-def secrets():
-    return render_template("secrets.html", name=current_user.name)
+@app.route('/create-customer', methods=["GET", "POST"])
+def create_customer():
+    form = createCustomer()
+    if form.validate_on_submit():
+        new_customer = Customer(
+            name=form.name.data,
+            phoneNumber=form.phoneNumber.data,
+            address=form.address.data,
+            city=form.city.data,
+            state=form.state.data
+        )
+        db.session.add(new_customer)
+        db.session.commit()
+        return redirect(url_for('dashboard', name=current_user.name))
+    return render_template("create_customer.html", form=form)
+
+
+@app.route('/create-product', methods=["GET", "POST"])
+def create_product():
+    form = createProduct()
+    if form.validate_on_submit():
+        new_product = Product(
+            name=form.name.data,
+            cuisine=form.cuisine.data,
+            price=form.price.data
+        )
+        db.session.add(new_product)
+        db.session.commit()
+        return redirect(url_for('dashboard', name=current_user.name))
+    return render_template("create_product.html", form=form)
 
 
 if __name__ == '__main__':
