@@ -37,7 +37,7 @@
                             <h5 class="card-title">Total Customers</h5>
                         </div>
                         <div class="card-body">
-                            <h3 class="card-title">20</h3>
+                            <h3 class="card-title">{{ totalCustomer }}</h3>
                         </div>
                     </div>
                 </div>
@@ -51,7 +51,7 @@
                             <h5 class="card-title">Total Orders</h5>
                         </div>
                         <div class="card-body">
-                            <h3 class="card-title">10</h3>
+                            <h3 class="card-title">{{ total_orders }}</h3>
                         </div>
                     </div>
                 </div>
@@ -64,7 +64,7 @@
                             <h5 class="card-title">Orders Delivered</h5>
                         </div>
                         <div class="card-body">
-                            <h3 class="card-title">7</h3>
+                            <h3 class="card-title">{{ delivered }}</h3>
                         </div>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                             <h5 class="card-title">Orders Pending</h5>
                         </div>
                         <div class="card-body">
-                            <h3 class="card-title">0</h3>
+                            <h3 class="card-title">{{ pending }}</h3>
                         </div>
                     </div>
                 </div>
@@ -91,7 +91,7 @@
                             <h5 class="card-title">Out for Delivery</h5>
                         </div>
                         <div class="card-body">
-                            <h3 class="card-title">6</h3>
+                            <h3 class="card-title">{{ out_for_delivery }}</h3>
                         </div>
                     </div>
                 </div>
@@ -104,7 +104,7 @@
                             <h5 class="card-title">Cancelled</h5>
                         </div>
                         <div class="card-body">
-                            <h3 class="card-title">5</h3>
+                            <h3 class="card-title">{{ cancel }}</h3>
                         </div>
                     </div>
                 </div>
@@ -126,11 +126,13 @@
                             <th>Customer</th>
                             <th>Phone</th>
                         </tr>
+                        {% for customer in all_customers: %}
                         <tr>
                             <td><a class="btn btn-sm btn-info" href="#">View</a></td>
-                            <td>Nikunj</td>
-                            <td>123456</td>
+                            <td>{{ customer.name }}</td>
+                            <td>{{ customer.phoneNumber }}</td>
                         </tr>
+                        {% endfor %}
                     </table>
                 </div>
             </div>
@@ -149,15 +151,17 @@
                             <th>Update</th>
                             <th>Remove</th>
                         </tr>
+                        {% for order in all_orders: %}
                         <tr>
-                            <td>Dosa</td>
-                            <td>1 Jun</td>
-                            <td>Pending...</td>
+                            <td>{{ order.product }}</td>
+                            <td>{{ order.date_created }}</td>
+                            <td>{{ order.status }}</td>
                             <td><a class="btn btn-sm btn-success" href="#">Update</a>
                             </td>
                             <td><a class="btn btn-sm btn-danger" href="#">Delete</a>
                             </td>
                         </tr>
+                        {% endfor %}
                     </table>
                 </div>
             </div>

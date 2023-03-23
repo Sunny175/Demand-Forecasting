@@ -3,6 +3,7 @@ import numpy as np
 from flask import Flask, render_template, request, url_for, redirect, flash
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_bootstrap import Bootstrap
 from customer_form import createCustomer
@@ -43,6 +44,15 @@ class Product(db.Model):
     name = db.Column(db.String(20), unique=True)
     cuisine = db.Column(db.String(20))
     price = db.Column(db.Integer)
+
+
+class order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    customer_id = db.Column(db.Integer)
+    date_created = db.Column(db.String)
+    status = db.Column(db.String)
+    product = db.Column(db.String)
+
 
 
 db.create_all()
@@ -104,7 +114,17 @@ def login():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    return render_template("dashboard.html", name=current_user.name)
+    totalCustomer = db.session.query(Customer.id).count()
+    all_customers = Customer.query.all()
+    all_orders = order.query.all()
+    total_orders = db.session.query(order.id).count()
+    status = db.session.query(order.status,func.count(order.status).label("out for delivery")).group_by(order.status).all()
+    cancel=status[0][1]
+    out_for_delivery = status[1][1]
+    delivered = status[2][1]
+    pending = status[3][1]
+
+    return render_template("dashboard.html", name=current_user.name, totalCustomer=totalCustomer, all_customers=all_customers, all_orders=all_orders, total_orders=total_orders, cancel=cancel, out_for_delivery=out_for_delivery, delivered=delivered, pending=pending)
 
 
 @app.route("/register", methods=["POST", "GET"])
