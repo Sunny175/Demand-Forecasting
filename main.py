@@ -54,12 +54,16 @@ class order(db.Model):
     product = db.Column(db.String)
 
 
-
 db.create_all()
 
 
 @app.route('/')
 def home():
+    return render_template('home.html')
+
+
+@app.route('/index')
+def index():
     return render_template('index.html')
 
 
@@ -118,13 +122,16 @@ def dashboard():
     all_customers = Customer.query.all()
     all_orders = order.query.all()
     total_orders = db.session.query(order.id).count()
-    status = db.session.query(order.status,func.count(order.status).label("out for delivery")).group_by(order.status).all()
-    cancel=status[0][1]
+    status = db.session.query(order.status, func.count(order.status).label("out for delivery")).group_by(
+        order.status).all()
+    cancel = status[0][1]
     out_for_delivery = status[1][1]
     delivered = status[2][1]
     pending = status[3][1]
 
-    return render_template("dashboard.html", name=current_user.name, totalCustomer=totalCustomer, all_customers=all_customers, all_orders=all_orders, total_orders=total_orders, cancel=cancel, out_for_delivery=out_for_delivery, delivered=delivered, pending=pending)
+    return render_template("dashboard.html", name=current_user.name, totalCustomer=totalCustomer,
+                           all_customers=all_customers, all_orders=all_orders, total_orders=total_orders, cancel=cancel,
+                           out_for_delivery=out_for_delivery, delivered=delivered, pending=pending)
 
 
 @app.route("/register", methods=["POST", "GET"])
@@ -156,7 +163,7 @@ def load_user(user_id):
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for("home"))
+    return redirect(url_for("login"))
 
 
 @app.route('/create-customer', methods=["GET", "POST"])
