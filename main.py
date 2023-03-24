@@ -37,6 +37,7 @@ class Customer(db.Model):
     phoneNumber = db.Column(db.Integer, unique=True)
     city = db.Column(db.String(20))
     state = db.Column(db.String(20))
+    mail = db.Column(db.String)
 
 
 class Product(db.Model):
@@ -196,6 +197,20 @@ def create_product():
         db.session.commit()
         return redirect(url_for('dashboard', name=current_user.name))
     return render_template("create_product.html", form=form)
+
+
+@app.route('/customer-details/<id>')
+def customer_details(id):
+    customer = Customer.query.get(id)
+    total_items = db.session.query(order.customer_id, func.count(order.customer_id)).group_by(order.customer_id)
+    total_orders = 0
+    for item in total_items:
+        if id == item[0]:
+            total_orders = item[id][1]
+            print(total_orders)
+            return render_template("customer_details.html", name=current_user.name, customer=customer, total_orders=total_orders)
+        print(item[int(id)][1])
+    return render_template("customer_details.html", name=current_user.name, customer=customer)
 
 
 if __name__ == '__main__':
