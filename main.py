@@ -8,6 +8,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_bootstrap import Bootstrap
 from customer_form import createCustomer
 from create_product import createProduct
+from order_form import OrderForm
+import datetime
 
 app = Flask(__name__)
 
@@ -203,15 +205,28 @@ def create_product():
 def customer_details(id):
     customer = Customer.query.get(id)
     total_items = db.session.query(order.customer_id, func.count(order.customer_id)).group_by(order.customer_id)
-    total_orders = 0
+    total_products = db.session.query(order).filter(order.customer_id == int(id))
     for item in total_items:
-        if id == item[0]:
-            total_orders = item[id][1]
-            print(total_orders)
-            return render_template("customer_details.html", name=current_user.name, customer=customer, total_orders=total_orders)
-        print(item[int(id)][1])
+        if int(id) == item[0]:
+            total_orders = item
+            return render_template("customer_details.html", name=current_user.name, customer=customer, total_orders=total_orders, total_products=total_products)
     return render_template("customer_details.html", name=current_user.name, customer=customer)
 
+
+@app.route("/place-order/<id>")
+def place_new_order(id):
+    form = OrderForm()
+    if form.validate_on_submit():
+        new_order = order(
+            customer_id=id,
+            date_created=str(datetime.date.today()),
+            status=form.status.data,
+            product=form.product.data
+        )
+        db.session.add(new_order)
+        db.session.commit()
+        return render_template("place_new_order.html")
+    return render_template("place_new_order.html", name=current_user.name, form=form)
 
 if __name__ == '__main__':
     app.run(debug=True)
